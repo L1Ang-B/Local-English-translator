@@ -1,0 +1,26 @@
+# ===================================================================
+# 快速翻译器 配置模板
+# 使用方法：复制本文件为 config.yaml，再填入自己的真实 API Key。
+#   copy config.example.yaml config.yaml
+# config.yaml 已被 .gitignore 忽略，不会被提交到 Git。
+# ===================================================================
+
+# 智谱 AI 的 API Key（必填）。请到 https://open.bigmodel.cn 申请。
+api_key: "your-api-key-here"
+
+# 调用的模型名
+model: "glm-4.7-flash"
+
+# 智谱兼容 OpenAI 格式的接口地址
+base_url: "https://open.bigmodel.cn/api/paas/v4/"
+
+# 全局快捷键（keyboard 库语法）。
+# 注意：Ctrl+Shift+T 在浏览器中常被"恢复关闭的标签页"占用，
+# 若冲突可改成 ctrl+alt+t 等。
+hotkey: "ctrl+shift+t"
+
+# 单次请求超时时间（秒）
+timeout: 10
+
+# 弹窗自动关闭时间（毫秒）
+popup_duration_ms: 6000
