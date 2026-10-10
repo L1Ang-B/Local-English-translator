@@ -6,11 +6,14 @@ translator.py —— 翻译模块
 不依赖弹窗、快捷键，可单独在命令行测试。
 """
 
+import logging
 import os
 import sys
 
 import yaml
 from openai import OpenAI
+
+logger = logging.getLogger(__name__)
 
 # 配置文件与本模块同目录。用绝对路径而非相对路径，
 # 是为了保证无论从哪个目录运行（python main.py / python translator.py），
@@ -112,20 +115,22 @@ class Translator:
 
 def main():
     """命令行自测入口：python translator.py "要翻译的英文" """
+    # 测试块单独配置日志，保证用 python.exe 直接运行时输出可见
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
     try:
         config = load_config()
         translator = Translator(config)
     except TranslationError as e:
-        print(f"[配置/初始化错误] {e}")
+        logger.error("[配置/初始化错误] %s", e)
         sys.exit(1)
 
     # 没传参数就用一句默认文本，方便快速验证链路是否通。
     text = " ".join(sys.argv[1:]).strip() or "Hello, world. This is a quick translator test."
-    print(f"原文：{text}")
+    logger.info("原文：%s", text)
     try:
-        print(f"译文：{translator.translate(text)}")
+        logger.info("译文：%s", translator.translate(text))
     except TranslationError as e:
-        print(f"[翻译失败] {e}")
+        logger.error("[翻译失败] %s", e)
         sys.exit(1)
 
 

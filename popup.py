@@ -6,9 +6,12 @@ popup.py —— 弹窗模块
 不涉及快捷键注册，不涉及剪贴板。
 """
 
+import logging
 import sys
 import tkinter as tk
 from typing import Callable
+
+logger = logging.getLogger(__name__)
 
 # 弹窗外观参数（集中放这里，方便统一调整）
 MARGIN = 20          # 弹窗距离屏幕边缘的间距（像素）
@@ -155,6 +158,8 @@ class TranslationPopup:
 
 def _main():
     """命令行自测：python popup.py "要显示的文本" """
+    # 测试块单独配置日志，保证用 python.exe 直接运行时输出可见
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
     text = " ".join(sys.argv[1:]).strip() or (
         "这是一条测试翻译结果：Artificial intelligence is transforming the world."
     )
@@ -164,11 +169,11 @@ def _main():
     popup.on_close = popup.root.quit
     # 稍等 300ms 再显示，模拟"主程序已启动、事件循环已就绪"的场景
     popup.root.after(300, lambda: popup.show(text))
-    print("弹窗已弹出（屏幕右上角）。")
-    print("关闭方式：点击弹窗后按 ESC，或等待 6 秒自动关闭。")
+    logger.info("弹窗已弹出（屏幕右上角）。")
+    logger.info("关闭方式：点击弹窗后按 ESC，或等待 6 秒自动关闭。")
     popup.run()
     popup.root.destroy()  # mainloop 退出后再回收根窗口
-    print("弹窗已关闭，程序正常退出。")
+    logger.info("弹窗已关闭，程序正常退出。")
 
 
 if __name__ == "__main__":

@@ -8,10 +8,13 @@ clipboard_util.py —— 剪贴板工具模块
 不涉及 tkinter，不涉及 keyboard 快捷键注册。
 """
 
+import logging
 import time
 
 import pyperclip
 import pyautogui
+
+logger = logging.getLogger(__name__)
 
 # ------------------------------------------------------------------
 # 两个延迟常量，都是"经验值"，解决真实环境下的时序问题：
@@ -100,44 +103,46 @@ def _main():
       A. 纯读写/恢复测试（不需要选中任何东西）
       B. 说明如何测试"模拟复制"
     """
-    print("=" * 50)
-    print("测试 A：读取 → 覆盖 → 恢复")
-    print("=" * 50)
-    print("请先手动复制一段文字（比如选中一行后 Ctrl+C），然后回车继续。")
+    # 测试块单独配置日志，保证用 python.exe 直接运行时输出可见
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+
+    logger.info("=" * 50)
+    logger.info("测试 A：读取 → 覆盖 → 恢复")
+    logger.info("=" * 50)
+    logger.info("请先手动复制一段文字（比如选中一行后 Ctrl+C），然后回车继续。")
     input("按回车开始...")
 
     original = read_text()
-    print(f"① 读到当前剪贴板：{original!r}")
+    logger.info("① 读到当前剪贴板：%r", original)
 
     marker = "__clipboard_util_测试覆盖__"
     write_text(marker)
-    print(f"② 覆盖后剪贴板  ：{read_text()!r}")
+    logger.info("② 覆盖后剪贴板  ：%r", read_text())
 
     restore_clipboard(original)
     restored = read_text()
-    print(f"③ 恢复后剪贴板  ：{restored!r}")
+    logger.info("③ 恢复后剪贴板  ：%r", restored)
 
     if restored == original:
-        print("✅ 测试通过：已成功保存并恢复原剪贴板内容。")
+        logger.info("✅ 测试通过：已成功保存并恢复原剪贴板内容。")
     else:
-        print("❌ 测试失败：恢复内容与原始内容不一致。")
+        logger.error("❌ 测试失败：恢复内容与原始内容不一致。")
 
-    print()
-    print("=" * 50)
-    print("测试 B：模拟 Ctrl+C（需手动制造选中状态）")
-    print("=" * 50)
-    print("即将在 3 秒后模拟 Ctrl+C。请在此期间：切换到一个有文字的地方，")
-    print("用鼠标选中一段文字，并保持窗口在前台。")
+    logger.info("=" * 50)
+    logger.info("测试 B：模拟 Ctrl+C（需手动制造选中状态）")
+    logger.info("=" * 50)
+    logger.info("即将在 3 秒后模拟 Ctrl+C。请在此期间：切换到一个有文字的地方，")
+    logger.info("用鼠标选中一段文字，并保持窗口在前台。")
     for i in range(3, 0, -1):
-        print(f"  {i} ...")
+        logger.info("  %d ...", i)
         time.sleep(1)
 
     grabbed = grab_selected_text()
-    print(f"抓取到选中内容：{grabbed!r}")
+    logger.info("抓取到选中内容：%r", grabbed)
     if grabbed:
-        print("✅ 模拟复制成功。")
+        logger.info("✅ 模拟复制成功。")
     else:
-        print("⚠️ 未抓到内容：可能没选中文本，或目标窗口不支持模拟按键。")
+        logger.warning("⚠️ 未抓到内容：可能没选中文本，或目标窗口不支持模拟按键。")
 
 
 if __name__ == "__main__":
